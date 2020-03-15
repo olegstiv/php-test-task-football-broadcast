@@ -92,11 +92,11 @@ class MatchBuilder
 
                     $players = $details['team1']['startPlayerNumbers'] ?? [];
                     if (count($players)) {
-                        $this->goToPlay($match->getHomeTeam(), $players, $minute);
+                        $this->goToPlay($match->getHomeTeam(), $players, 0);
                     }
                     $players = $details['team2']['startPlayerNumbers'] ?? [];
                     if (count($players)) {
-                        $this->goToPlay($match->getAwayTeam(), $players, $minute);
+                        $this->goToPlay($match->getAwayTeam(), $players, 0);
                     }
                     break;
                 case 'finishPeriod':
