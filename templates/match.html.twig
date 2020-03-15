@@ -109,6 +109,7 @@
                 <thead>
                 <tr>
                     <th>#</th>
+                    <th></th>
                     <th>Имя</th>
                     <th></th>
                 </tr>
@@ -118,6 +119,11 @@
                     <tr>
                         <td>
                             {{ player.number }}
+                        </td>
+                        <td>
+                           {% if player.goals > 0 %}
+                                    <img src="https://www.soccer.ru/sites/all/themes/newtheme/images/events-icons/goal.png">
+                            {% endif %}
                         </td>
                         <td>
                             {{ player.name }}

@@ -18,6 +18,7 @@ class Player
     private int $inMinute;
     private int $outMinute;
     private int $hasCard;
+    private int $goals;
 
     public function __construct(int $number, string $name)
     {
@@ -26,6 +27,7 @@ class Player
         $this->playStatus = self::BENCH_PLAY_STATUS;
         $this->inMinute = 0;
         $this->outMinute = 0;
+        $this->goals = 0;
         $this->hasCard = self::NULL_CARD_TYPE;
     }
 
@@ -93,5 +95,15 @@ class Player
     public function getCard(): int
     {
         return $this->hasCard;
+    }
+
+    public function addGoal(): void
+    {
+        $this->goals++;
+    }
+
+    public function getGoals(): int
+    {
+        return $this->goals;
     }
 }
