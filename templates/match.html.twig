@@ -121,6 +121,11 @@
                         </td>
                         <td>
                             {{ player.name }}
+                              {% if player.getCard() == constant("App\\Entity\\Player::RED_CARD_TYPE") %}
+                                    <img src="https://www.soccer.ru/sites/all/themes/newtheme/images/events-icons/yellow_red.png">
+                            {% elseif player.getCard() == constant('App\\Entity\\Player::YELLOW_CARD_TYPE') %}
+                                    <img src="https://www.soccer.ru/sites/all/themes/newtheme/images/events-icons/card.png">
+                            {% endif %}
                         </td>
                         <td>
                             {{ player.playTime }}’

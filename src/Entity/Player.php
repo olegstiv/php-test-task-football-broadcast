@@ -1,16 +1,23 @@
 <?php
+
 namespace App\Entity;
+
+use JsonSchema\Exception\ResourceNotFoundException;
 
 class Player
 {
     private const PLAY_PLAY_STATUS = 'play';
     private const BENCH_PLAY_STATUS = 'bench';
+    public const NULL_CARD_TYPE = 0;
+    public const RED_CARD_TYPE = 1;
+    public const YELLOW_CARD_TYPE = 2;
 
     private int $number;
     private string $name;
     private string $playStatus;
     private int $inMinute;
     private int $outMinute;
+    private int $hasCard;
 
     public function __construct(int $number, string $name)
     {
@@ -19,6 +26,7 @@ class Player
         $this->playStatus = self::BENCH_PLAY_STATUS;
         $this->inMinute = 0;
         $this->outMinute = 0;
+        $this->hasCard = self::NULL_CARD_TYPE;
     }
 
     public function getNumber(): int
@@ -48,7 +56,7 @@ class Player
 
     public function getPlayTime(): int
     {
-        if(!$this->outMinute) {
+        if (!$this->outMinute) {
             return 0;
         }
 
@@ -65,5 +73,25 @@ class Player
     {
         $this->outMinute = $minute;
         $this->playStatus = self::BENCH_PLAY_STATUS;
+    }
+
+    public function addYellowCard(int $minute)
+    {
+        switch ($this->hasCard) {
+            case self::NULL_CARD_TYPE:
+                $this->hasCard = self::YELLOW_CARD_TYPE;
+                break;
+            case self::YELLOW_CARD_TYPE:
+                $this->hasCard = self::RED_CARD_TYPE;
+                $this->goToBench($minute);
+                break;
+            default:
+                return new ResourceNotFoundException('The player already has a red card', 403);
+        }
+    }
+
+    public function getCard(): int
+    {
+        return $this->hasCard;
     }
 }

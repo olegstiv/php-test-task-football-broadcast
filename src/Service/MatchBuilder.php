@@ -89,7 +89,7 @@ class MatchBuilder
             switch ($event['type']) {
                 case 'startPeriod':
                     $period++;
-
+                    //начало тайма начинается с нуля, либо изменяем json файл, kb
                     $players = $details['team1']['startPlayerNumbers'] ?? [];
                     if (count($players)) {
                         $this->goToPlay($match->getHomeTeam(), $players, 0);
@@ -113,6 +113,11 @@ class MatchBuilder
                 case 'goal':
                     $team = $this->getTeamByName($match, $details['team']);
                     $team->addGoal();
+                    break;
+                case 'yellowCard':
+                    $player = $this->getTeamByName($match, $details['team'])
+                        ->getPlayer($details['playerNumber']);
+                    $player->addYellowCard($minute);
                     break;
 
             }
