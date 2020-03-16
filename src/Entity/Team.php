@@ -78,10 +78,26 @@ class Team
         return $this->coach;
     }
 
+    private function getPlayersFromPosition(string $position):array
+    {
+        $players = [];
+        foreach ($this->getPlayers() as $player ){
+            if ($player->getPosition() == ucfirst($position)){
+                $players[] = $player;
+            }
+        }
+        return $players;
+
+    }
+
     public function addGoal(int $playNumber): void
     {
         $this->goals += 1;
-        $this->getPlayer($playNumber)->addGoal();
+        try {
+            $this->getPlayer($playNumber)->addGoal();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
     }
 
     public function getGoals(): int
@@ -89,6 +105,15 @@ class Team
         return $this->goals;
     }
 
+    public function getSumTimeFromPosition(string $position): int
+    {
+        $sumTime = 0;
+        foreach ($this->getPlayersFromPosition($position) as $player ){
+            $sumTime += $player->getPlayTime();
+        }
+        return $sumTime;
+
+    }
 
     private function assertCorrectPlayers(array $players)
     {

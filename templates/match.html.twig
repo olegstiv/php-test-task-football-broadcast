@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
           crossorigin="anonymous">
 
     <title>{{ match.tournament }} || {{ match.homeTeam.name }} – {{ match.awayTeam.name }}</title>
@@ -87,6 +88,7 @@
             {% import _self as render %}
             {{ render.renderTeamInfo(match.homeTeam) }}
             {{ render.renderTeamInfo(match.awayTeam) }}
+            {{ render.renderTeamPositionTime(match.awayTeam) }}
         </div>
     </div>
 </div>
@@ -111,6 +113,7 @@
                     <th>#</th>
                     <th></th>
                     <th>Имя</th>
+                    <th>Позиция</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -121,23 +124,52 @@
                             {{ player.number }}
                         </td>
                         <td>
-                           {% if player.goals > 0 %}
-                                    <img src="https://www.soccer.ru/sites/all/themes/newtheme/images/events-icons/goal.png">
+                            {% if player.goals > 0 %}
+                                <img src="https://www.soccer.ru/sites/all/themes/newtheme/images/events-icons/goal.png">
                             {% endif %}
                         </td>
                         <td>
                             {{ player.name }}
-                              {% if player.getCard() == constant("App\\Entity\\Player::RED_CARD_TYPE") %}
-                                    <img src="https://www.soccer.ru/sites/all/themes/newtheme/images/events-icons/yellow_red.png">
+                            {% if player.getCard() == constant("App\\Entity\\Player::RED_CARD_TYPE") %}
+                                <img src="https://www.soccer.ru/sites/all/themes/newtheme/images/events-icons/yellow_red.png">
                             {% elseif player.getCard() == constant('App\\Entity\\Player::YELLOW_CARD_TYPE') %}
-                                    <img src="https://www.soccer.ru/sites/all/themes/newtheme/images/events-icons/card.png">
+                                <img src="https://www.soccer.ru/sites/all/themes/newtheme/images/events-icons/card.png">
                             {% endif %}
+                        </td>
+                        <td>
+                            {{ player.getPosition() }}
                         </td>
                         <td>
                             {{ player.playTime }}’
                         </td>
                     </tr>
                 {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro renderTeamPositionTime(team) %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <table class="table table">
+                <thead>
+
+                </thead>
+                <tbody>
+                <tr>
+                    <th>Защитник</th>
+                    <th>Вратарь</th>
+                    <th>Полузащитник</th>
+                    <th>Нападающий</th>
+                </tr>
+                <tr>
+                    <th>{{ team.getSumTimeFromPosition(constant("App\\Entity\\Player::DEFENDER_POSITION_TYPE")) }}</th>
+                    <th>{{ team.getSumTimeFromPosition(constant("App\\Entity\\Player::GOALKEEPER_POSITION_TYPE")) }}</th>
+                    <th>{{ team.getSumTimeFromPosition(constant("App\\Entity\\Player::FORWARD_POSITION_TYPE")) }}</th>
+                    <th>{{ team.getSumTimeFromPosition(constant("App\\Entity\\Player::MIDFIELDER_POSITION_TYPE")) }}</th>
+                </tr>
                 </tbody>
             </table>
         </div>

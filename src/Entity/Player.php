@@ -8,27 +8,58 @@ class Player
 {
     private const PLAY_PLAY_STATUS = 'play';
     private const BENCH_PLAY_STATUS = 'bench';
+
     public const NULL_CARD_TYPE = 0;
     public const RED_CARD_TYPE = 1;
     public const YELLOW_CARD_TYPE = 2;
 
+    public const FORWARD_POSITION_TYPE = 'Н';
+    public const MIDFIELDER_POSITION_TYPE = 'П';
+    public const GOALKEEPER_POSITION_TYPE = 'В';
+    public const DEFENDER_POSITION_TYPE = 'З';
+
+    public const POSITION_TYPES = [
+        self::FORWARD_POSITION_TYPE => 'Нападающий',
+        self::MIDFIELDER_POSITION_TYPE => 'Полузащитник',
+        self::GOALKEEPER_POSITION_TYPE => 'Вратарь',
+        self::DEFENDER_POSITION_TYPE => 'Защитник',
+    ];
+
     private int $number;
     private string $name;
+    private string $position;
     private string $playStatus;
     private int $inMinute;
     private int $outMinute;
     private int $hasCard;
     private int $goals;
 
-    public function __construct(int $number, string $name)
+    public function __construct(int $number, string $name, string $position)
     {
         $this->number = $number;
         $this->name = $name;
+        $this->position = self::getTypePosition($position);
         $this->playStatus = self::BENCH_PLAY_STATUS;
         $this->inMinute = 0;
         $this->outMinute = 0;
         $this->goals = 0;
         $this->hasCard = self::NULL_CARD_TYPE;
+    }
+
+    public static function getTypePosition(string $position): string
+    {
+        $position = ucfirst($position);
+        if (array_key_exists($position, self::POSITION_TYPES))
+            return $position;
+
+        throw new \Exception(
+            sprintf('incorrect position "%s"', $position)
+        );
+    }
+
+    public function getPosition()
+    {
+        return $this->position;
     }
 
     public function getNumber(): int
@@ -61,8 +92,12 @@ class Player
         if (!$this->outMinute) {
             return 0;
         }
-
         return $this->outMinute - $this->inMinute;
+    }
+
+    public function addMinute($minute):void
+    {
+        $sp = $this->getPlayTime();
     }
 
     public function goToPlay(int $minute): void
@@ -77,7 +112,7 @@ class Player
         $this->playStatus = self::BENCH_PLAY_STATUS;
     }
 
-    public function addYellowCard(int $minute)
+    public function addYellowCard(int $minute): void
     {
         switch ($this->hasCard) {
             case self::NULL_CARD_TYPE:
@@ -88,7 +123,9 @@ class Player
                 $this->goToBench($minute);
                 break;
             default:
-                return new ResourceNotFoundException('The player already has a red card', 403);
+                throw new \Exception(
+                    sprintf('The player "%s" already has a red card', $this->getName())
+                );
         }
     }
 
@@ -106,4 +143,9 @@ class Player
     {
         return $this->goals;
     }
+
+//    public function getPosition(): int
+//    {
+//        return $this->getPosition();
+//    }
 }
