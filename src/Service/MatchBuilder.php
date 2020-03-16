@@ -9,6 +9,13 @@ use App\Entity\Team;
 
 class MatchBuilder
 {
+    private Match $match;
+    private int $timeMatch;
+    /**
+     * @var bool
+     */
+    private bool $playStatus;
+
     public function build(string $id, array $logs): Match
     {
         $event = $this->extractStartMatchEvent($logs);
@@ -19,7 +26,9 @@ class MatchBuilder
         $homeTeam = $this->buildHomeTeam($event);
         $awayTeam = $this->buildAwayTeam($event);
         $match = new Match($id, $dateTime, $tournament, $stadium, $homeTeam, $awayTeam);
-
+        $this->match = $match;
+        $this->timeMatch = 0;
+        $this->playStatus = false;
         $this->processLogs($match, $logs);
 
         return $match;
@@ -86,6 +95,7 @@ class MatchBuilder
         foreach ($logs as $event) {
             $details = $event['details'];
             $minute = $event['time'];
+            $this->addMinute($minute);
 
             switch ($event['type']) {
                 case 'startPeriod':
@@ -99,11 +109,13 @@ class MatchBuilder
                     if (count($players)) {
                         $this->goToPlay($match->getAwayTeam(), $players, 0);
                     }
+                    $this->playStatus = true;
                     break;
                 case 'finishPeriod':
                     if ($period === 2) {
                         $this->goToBenchAllPlayers($match->getHomeTeam(), $minute);
                         $this->goToBenchAllPlayers($match->getAwayTeam(), $minute);
+                        $this->playStatus = false;
                     }
                     break;
                 case 'replacePlayer':
@@ -120,19 +132,13 @@ class MatchBuilder
                         ->getPlayer($details['playerNumber']);
                     $player->addYellowCard($minute);
                     break;
-
-
             }
 
-            foreach ($match->getHomeTeam()->getPlayersOnField() as $player){
-                $player->addMinute($minute);
-            }
             $match->addMessage(
                 $this->buildMinuteString($period, $event),
                 $event['description'],
                 $this->buildMessageType($event)
             );
-
         }
     }
 
@@ -195,5 +201,26 @@ class MatchBuilder
                 $match->getAwayTeam()->getName()
             )
         );
+    }
+
+    private function addMinute(int $minute): void
+    {
+        if ($minute > $this->timeMatch && $this->playStatus == true) {
+            $min = $minute - $this->timeMatch;
+            foreach ($this->match->getHomeTeam()->getPlayersOnField() as $player) {
+                $player->addMinute($min, Player::PLAY_PLAY_STATUS);
+            }
+            foreach ($this->match->getAwayTeam()->getPlayersOnField() as $player) {
+                $player->addMinute($min, Player::PLAY_PLAY_STATUS);
+            }
+
+            foreach ($this->match->getHomeTeam()->getPlayersOnBeach() as $player) {
+                $player->addMinute($min, Player::BENCH_PLAY_STATUS);
+            }
+            foreach ($this->match->getAwayTeam()->getPlayersOnBeach() as $player) {
+                $player->addMinute($min, Player::BENCH_PLAY_STATUS);
+            }
+            $this->timeMatch = $minute;
+        }
     }
 }

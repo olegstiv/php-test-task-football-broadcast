@@ -6,8 +6,8 @@ use JsonSchema\Exception\ResourceNotFoundException;
 
 class Player
 {
-    private const PLAY_PLAY_STATUS = 'play';
-    private const BENCH_PLAY_STATUS = 'bench';
+    public const PLAY_PLAY_STATUS = 'play';
+    public const BENCH_PLAY_STATUS = 'bench';
 
     public const NULL_CARD_TYPE = 0;
     public const RED_CARD_TYPE = 1;
@@ -87,6 +87,11 @@ class Player
         return $this->playStatus === self::PLAY_PLAY_STATUS;
     }
 
+    public function isBench(): bool
+    {
+        return $this->playStatus === self::BENCH_PLAY_STATUS;
+    }
+
     public function getPlayTime(): int
     {
         if (!$this->outMinute) {
@@ -95,20 +100,21 @@ class Player
         return $this->outMinute - $this->inMinute;
     }
 
-    public function addMinute($minute):void
+    public function addMinute($minute, string $where):void
     {
-        $sp = $this->getPlayTime();
+        if ($where == self::PLAY_PLAY_STATUS)
+            $this->outMinute += $minute;
+        if ($where == self::BENCH_PLAY_STATUS)
+            $this->inMinute+= $minute;;
     }
 
     public function goToPlay(int $minute): void
     {
-        $this->inMinute = $minute;
         $this->playStatus = self::PLAY_PLAY_STATUS;
     }
 
     public function goToBench(int $minute): void
     {
-        $this->outMinute = $minute;
         $this->playStatus = self::BENCH_PLAY_STATUS;
     }
 
@@ -143,9 +149,4 @@ class Player
     {
         return $this->goals;
     }
-
-//    public function getPosition(): int
-//    {
-//        return $this->getPosition();
-//    }
 }

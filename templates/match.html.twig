@@ -88,7 +88,6 @@
             {% import _self as render %}
             {{ render.renderTeamInfo(match.homeTeam) }}
             {{ render.renderTeamInfo(match.awayTeam) }}
-            {{ render.renderTeamPositionTime(match.awayTeam) }}
         </div>
     </div>
 </div>
@@ -106,6 +105,7 @@
                 <small>{{ team.coach }}</small>
             </div>
         </div>
+            {{ render.renderTeamPositionTime(team) }}
         <div class="card-body">
             <table class="table table">
                 <thead>
@@ -140,7 +140,7 @@
                             {{ player.getPosition() }}
                         </td>
                         <td>
-                            {{ player.playTime }}’
+                            {{ player.OutMinute }}’
                         </td>
                     </tr>
                 {% endfor %}
@@ -165,10 +165,10 @@
                     <th>Нападающий</th>
                 </tr>
                 <tr>
-                    <th>{{ team.getSumTimeFromPosition(constant("App\\Entity\\Player::DEFENDER_POSITION_TYPE")) }}</th>
-                    <th>{{ team.getSumTimeFromPosition(constant("App\\Entity\\Player::GOALKEEPER_POSITION_TYPE")) }}</th>
-                    <th>{{ team.getSumTimeFromPosition(constant("App\\Entity\\Player::FORWARD_POSITION_TYPE")) }}</th>
-                    <th>{{ team.getSumTimeFromPosition(constant("App\\Entity\\Player::MIDFIELDER_POSITION_TYPE")) }}</th>
+                    <th>{{ team.getSumTimeFromPosition(constant("App\\Entity\\Player::DEFENDER_POSITION_TYPE")) }}’</th>
+                    <th>{{ team.getSumTimeFromPosition(constant("App\\Entity\\Player::GOALKEEPER_POSITION_TYPE")) }}’</th>
+                    <th>{{ team.getSumTimeFromPosition(constant("App\\Entity\\Player::FORWARD_POSITION_TYPE")) }}’</th>
+                    <th>{{ team.getSumTimeFromPosition(constant("App\\Entity\\Player::MIDFIELDER_POSITION_TYPE")) }}’</th>
                 </tr>
                 </tbody>
             </table>

@@ -51,6 +51,16 @@ class Team
         });
     }
 
+    /**
+     * @return Player[]
+     */
+    public function getPlayersOnBeach(): array
+    {
+        return array_filter($this->players, function (Player $player) {
+            return $player->isBench();
+        });
+    }
+
     public function getPlayers(): array
     {
         return $this->players;
@@ -109,7 +119,7 @@ class Team
     {
         $sumTime = 0;
         foreach ($this->getPlayersFromPosition($position) as $player ){
-            $sumTime += $player->getPlayTime();
+            $sumTime += $player->getOutMinute();
         }
         return $sumTime;
 
